@@ -1,6 +1,4 @@
 //Naming some variables I'll probably use
-	
-
 
 	var x = 'X';
 	var o = 'O';
@@ -8,7 +6,6 @@
 	var currentPlayer = x;				//first player will be x
 	var turn = 0;
 	var board = [null, null, null, null, null, null, null, null, null];
-
 
 	var renderMessage = function(message) {
 		$('.message').html(message);
@@ -40,14 +37,16 @@
 		//the array and set it to current player
 		board[index] = currentPlayer;
 		//add 'x' or 'o' to the clicked tile on the html!!!
-		$tile.fadeIn().html(currentPlayer);
+		$tile.html(currentPlayer);
 		turn += 1;
 	};
 
-	var reset = function () {
+	var playAgain = function () {
 		$('.tile').html("");
 		board = [null, null, null, null, null, null, null, null, null];
 		turn = 0;
+		changePlayer();
+		renderMessage('Current Player: ' + currentPlayer);
 	};
 
 		
@@ -88,6 +87,13 @@
 		var endMessage;
 		if ($.isArray(endFormation)) {
 			endMessage = 'Player ' + currentPlayer + ' wins';
+			if (currentPlayer === x) {
+				player1.currentWins++;
+				player1.render();
+			} else {
+				player2.currentWins++;
+				player2.render();
+			}	
 			displayWinner(endFormation);
 		} else {
 			endMessage = 'Ties suck - better play again';
@@ -101,7 +107,7 @@
 	$('.gameboard').off('click');
 	//and reload page on when play again is clicked
 	$('.play-again').show().on('click', function() {
-		reset();
+		playAgain();
 	});
 
 	var displayWinner = function (formation) {
@@ -119,11 +125,50 @@
 			//depending on who is current player, stick x or o in the tile
 			//check for winner >> if winner, then show winner, if not, keep playing
 			var winFormation = checkWinner();
-			(winFormation)? endGame(winFormation) : changePlayer();
+			if (winFormation) {
+				endGame(winFormation);
+			} else {
+				changePlayer();
+			};
 		};
 	};
 
-	
+	var player1 = {
+		name: prompt("Player X, please enter your first name") || "Walter W.",
+		currentWins: 0,
+		render: function (){
+			
+			var $player1 = $('#playerbox1');
+			$player1.empty();
+			
+			var $name1 = $('<div>').text("Player X :  " + this.name).addClass("name1");
+			$player1.append($name1);
+
+			var $wins1 = $('<div>').text("Wins :  " + this.currentWins).addClass("wins1");
+			$player1.append($wins1);
+		}	
+	};
+
+	player1.render();
+
+	var player2 = {
+		name: prompt("Player O, please enter your first name") || "Jesse P.",
+		currentWins: 0,
+		render: function (){
+			
+			var $player2 = $('#playerbox2');
+			$player2.empty();
+			
+			var $name2 = $('<div>').text("Player O :  " + this.name).addClass("name2");
+			$player2.append($name2);
+
+			var $wins2 = $('<div>').text("Wins :  " + this.currentWins).addClass("wins2");
+			$player2.append($wins2);	
+		}
+	};	
+
+	player2.render();
+
 $(document).ready(function() {
 	$('.gameboard').on('click', '.tile', function() {
 		init($(this));
